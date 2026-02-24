@@ -1,0 +1,10 @@
+{
+  "name": "Gary Stevens",
+  "title": "Software Engineer",
+  "bio": "A passionate developer who builds thoughtful, well-crafted software.",
+  "links": {
+    "github": "https://github.com/garystevens",
+    "linkedin": "https://linkedin.com/in/garystevens",
+    "email": "gary@example.com"
+  }
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "title": "Project Alpha",
+    "description": "A placeholder project showcasing full-stack capabilities.",
+    "tags": ["Node.js", "React", "PostgreSQL"],
+    "image": "/images/project-alpha.png",
+    "url": "https://github.com/garystevens/project-alpha"
+  },
+  {
+    "title": "Project Beta",
+    "description": "A placeholder project demonstrating API design and integration.",
+    "tags": ["Python", "FastAPI", "Docker"],
+    "image": "/images/project-beta.png",
+    "url": "https://github.com/garystevens/project-beta"
+  },
+  {
+    "title": "Project Gamma",
+    "description": "A placeholder project focused on data visualization and analysis.",
+    "tags": ["JavaScript", "D3.js", "SVG"],
+    "image": "/images/project-gamma.png",
+    "url": "https://github.com/garystevens/project-gamma"
+  }
+]

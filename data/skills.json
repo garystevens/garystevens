@@ -1,0 +1,14 @@
+[
+  {
+    "category": "Languages",
+    "skills": ["JavaScript", "TypeScript", "Python", "HTML", "CSS"]
+  },
+  {
+    "category": "Frameworks & Libraries",
+    "skills": ["Node.js", "Express", "React", "Next.js"]
+  },
+  {
+    "category": "Tools & Platforms",
+    "skills": ["Git", "Docker", "Linux", "VS Code"]
+  }
+]
