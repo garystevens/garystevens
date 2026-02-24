@@ -46,10 +46,10 @@ garystevens/
 
 ## npm scripts
 
-| Command | Description |
-|---|---|
+| Command     | Description                 |
+| ----------- | --------------------------- |
 | `npm start` | Start the production server |
-| `npm test` | Run the test suite |
+| `npm test`  | Run the test suite          |
 
 ---
 
@@ -109,11 +109,11 @@ Returns skill categories and their members.
 
 All content lives in `data/`. No server restart is needed between edits during development — changes take effect on the next request.
 
-| File | What to edit |
-|---|---|
-| `data/profile.json` | Name, title, bio, social links |
-| `data/projects.json` | Add, remove, or update projects |
-| `data/skills.json` | Add, remove, or reorder skill categories |
+| File                 | What to edit                             |
+| -------------------- | ---------------------------------------- |
+| `data/profile.json`  | Name, title, bio, social links           |
+| `data/projects.json` | Add, remove, or update projects          |
+| `data/skills.json`   | Add, remove, or reorder skill categories |
 
 After editing, run `npm test` to verify the data files still conform to the expected shape.
 
@@ -121,9 +121,9 @@ After editing, run `npm test` to verify the data files still conform to the expe
 
 ## Configuration
 
-| Environment variable | Default | Description |
-|---|---|---|
-| `PORT` | `3000` | Port the server listens on |
+| Environment variable | Default | Description                |
+| -------------------- | ------- | -------------------------- |
+| `PORT`               | `3000`  | Port the server listens on |
 
 Set via shell or a `.env` file (requires `dotenv` if using a `.env` file):
 

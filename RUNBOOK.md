@@ -62,11 +62,11 @@ npm test
 
 1. Edit the relevant file in `data/`:
 
-   | Goal | File |
-   |---|---|
-   | Update bio, title, or links | `data/profile.json` |
-   | Add or edit a project | `data/projects.json` |
-   | Add or edit a skill category | `data/skills.json` |
+   | Goal                         | File                 |
+   | ---------------------------- | -------------------- |
+   | Update bio, title, or links  | `data/profile.json`  |
+   | Add or edit a project        | `data/projects.json` |
+   | Add or edit a skill category | `data/skills.json`   |
 
 2. Validate the change:
 
@@ -115,6 +115,7 @@ npm test
 ```
 
 All 14 tests should pass. A failure indicates either:
+
 - A data file is malformed or missing a required field
 - A route is broken in `server.js`
 - A file was renamed or moved
@@ -146,11 +147,11 @@ Go to the **Actions** tab on GitHub. Each run shows per-job logs. The badge in t
 
 ### Common CI failure causes
 
-| Symptom | Likely cause |
-|---|---|
-| `npm ci` fails | `package-lock.json` is out of sync — run `npm install` locally and commit the updated lockfile |
+| Symptom                           | Likely cause                                                                                       |
+| --------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `npm ci` fails                    | `package-lock.json` is out of sync — run `npm install` locally and commit the updated lockfile     |
 | Tests pass locally but fail in CI | An absolute path or OS-specific behaviour in a test; check the logs for the differing Node version |
-| Workflow doesn't trigger | Branch name doesn't match `main`; check the `on.push.branches` value in `ci.yml` |
+| Workflow doesn't trigger          | Branch name doesn't match `main`; check the `on.push.branches` value in `ci.yml`                   |
 
 ---
 
