@@ -40,6 +40,25 @@ kill <PID>
 
 ---
 
+## Request logging
+
+Morgan logs every HTTP request to stdout. The format depends on the environment:
+
+| `NODE_ENV`      | Format     | Example                                                         |
+| --------------- | ---------- | --------------------------------------------------------------- |
+| (default / dev) | `dev`      | `GET /data/profile 200 3.2 ms`                                  |
+| `production`    | `combined` | Apache combined log format — includes IP, user-agent, timestamp |
+| `test`          | —          | Logging is suppressed                                           |
+
+To follow logs in real time (if running as a background process):
+
+```bash
+node server.js 2>&1 | tee server.log
+tail -f server.log
+```
+
+---
+
 ## Verifying the server is healthy
 
 Check that all three data endpoints respond:
@@ -116,7 +135,7 @@ This installs all dependencies — production (`express`) and dev (`jest`, `supe
 npm test
 ```
 
-All 14 tests should pass. A failure indicates either:
+All 15 tests should pass. A failure indicates either:
 
 - A data file is malformed or missing a required field
 - A route is broken in `server.js`

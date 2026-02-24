@@ -12,7 +12,8 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "morgan": "^1.10.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.3",

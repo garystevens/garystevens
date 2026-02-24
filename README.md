@@ -169,6 +169,7 @@ Coverage areas:
 - Unknown routes return 404
 - Each `/data/*` endpoint returns 200 JSON with the correct shape
 - Required fields and types are validated per endpoint
+- Unhandled errors return JSON (not HTML) with the correct status code
 
 ---
 
@@ -198,10 +199,18 @@ npm ci && npm run lint && npm test -- --forceExit
 
 `server.js` exports `app` and only calls `app.listen()` when run directly (`node server.js`). This allows tests to import the app without binding a port.
 
+**Middleware order** (registration order matters in Express):
+
+1. `morgan` — logs every request; skipped when `NODE_ENV=test`
+2. `express.static` — serves `public/`
+3. Data routes — `GET /data/*`
+4. Global error handler — catches any unhandled error, returns `{ error: "..." }` JSON; masks 5xx messages in production
+
 ```
 ┌─────────────┐     GET /          ┌──────────────┐
 │             │ ─────────────────> │  public/     │
 │   Browser   │                    │  index.html  │
 │             │ ─── GET /data/* ─> │  data/*.json │
+│             │ ─── (any error) ─> │  error JSON  │
 └─────────────┘                    └──────────────┘
 ```

@@ -75,6 +75,17 @@ describe('GET /data/projects', () => {
   });
 });
 
+describe('Error handler', () => {
+  test('returns JSON with status 500 for unhandled errors', async () => {
+    const res = await request(app).get('/__test/error');
+    expect(res.status).toBe(500);
+    expect(res.headers['content-type']).toMatch(/json/);
+    expect(res.body).toHaveProperty('error');
+    expect(typeof res.body.error).toBe('string');
+    expect(res.body.error.length).toBeGreaterThan(0);
+  });
+});
+
 describe('GET /data/skills', () => {
   let body;
 
