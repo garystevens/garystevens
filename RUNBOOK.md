@@ -104,11 +104,13 @@ Run `npm test` to confirm the data file is still valid. Note: the test suite cur
 npm install
 ```
 
-This installs both production (`express`) and dev (`jest`, `supertest`) dependencies.
+This installs all dependencies — production (`express`) and dev (`jest`, `supertest`, `eslint`, `prettier`, `husky`, `lint-staged`). Husky's git hooks are set up automatically via the `prepare` script.
 
 ---
 
-## Running tests
+## Running checks
+
+### Tests
 
 ```bash
 npm test
@@ -120,6 +122,53 @@ All 14 tests should pass. A failure indicates either:
 - A route is broken in `server.js`
 - A file was renamed or moved
 
+### Lint
+
+```bash
+npm run lint
+```
+
+No output means all files pass. To auto-fix fixable issues:
+
+```bash
+npm run lint:fix
+```
+
+### Format
+
+```bash
+npm run format
+```
+
+Rewrites files in place. Safe to run at any time — commit first if you want a clean diff.
+
+---
+
+## Pre-commit hook
+
+Husky installs a `pre-commit` hook that runs **lint-staged** automatically on every `git commit`. It only processes staged files, so it's fast.
+
+What it does per file type:
+
+| Files                     | Steps                         |
+| ------------------------- | ----------------------------- |
+| `*.js`                    | `eslint --fix`, then Prettier |
+| `*.json`, `*.md`, `*.yml` | Prettier                      |
+
+If the hook blocks a commit, fix the reported issues and re-stage:
+
+```bash
+npm run lint:fix
+git add -p       # re-stage the fixed files
+git commit
+```
+
+To skip the hook in an emergency (use sparingly):
+
+```bash
+git commit --no-verify -m "message"
+```
+
 ---
 
 ## CI pipeline
@@ -129,7 +178,13 @@ All 14 tests should pass. A failure indicates either:
 - Every push to `main`
 - Every pull request targeting `main`
 
-Runs on Node 18 and Node 20 in parallel. Both must pass for the job to be green.
+Three jobs run in parallel — all must pass for the check to be green:
+
+| Job           | What it runs              |
+| ------------- | ------------------------- |
+| `lint`        | `npm run lint` on Node 20 |
+| `test (18.x)` | Test suite on Node 18     |
+| `test (20.x)` | Test suite on Node 20     |
 
 ### Checking pipeline status
 
@@ -138,18 +193,26 @@ Go to the **Actions** tab on GitHub. Each run shows per-job logs. The badge in t
 ### When CI fails
 
 1. Click into the failed run on the Actions tab
-2. Expand the **Run tests** step to see which tests failed and why
-3. Fix the issue locally, verify with:
+2. Identify which job failed — `lint`, `test (18.x)`, or `test (20.x)`
+3. Expand the failing step (**Lint** or **Run tests**) to see the error
+4. Fix locally and verify:
+
    ```bash
-   npm ci && npm test -- --forceExit
+   # If lint failed:
+   npm run lint:fix && npm run lint
+
+   # If tests failed:
+   npm test -- --forceExit
    ```
-4. Push the fix — CI re-runs automatically
+
+5. Push the fix — CI re-runs automatically
 
 ### Common CI failure causes
 
 | Symptom                           | Likely cause                                                                                       |
 | --------------------------------- | -------------------------------------------------------------------------------------------------- |
 | `npm ci` fails                    | `package-lock.json` is out of sync — run `npm install` locally and commit the updated lockfile     |
+| Lint fails in CI but not locally  | ESLint or Prettier version mismatch — ensure you ran `npm ci`, not `npm install`                   |
 | Tests pass locally but fail in CI | An absolute path or OS-specific behaviour in a test; check the logs for the differing Node version |
 | Workflow doesn't trigger          | Branch name doesn't match `main`; check the `on.push.branches` value in `ci.yml`                   |
 
@@ -211,6 +274,21 @@ node -e "require('./data/skills.json')"
 ```
 
 No output means the file is valid. A `SyntaxError` points to the offending file.
+
+---
+
+### ESLint or Prettier errors on commit
+
+The pre-commit hook blocked your commit. Read the output to identify the file and rule, then:
+
+```bash
+npm run lint:fix   # auto-fix what ESLint can
+npm run format     # fix all Prettier issues
+git add -p         # re-stage the corrected files
+git commit
+```
+
+If the issue can't be auto-fixed, edit the file manually, re-stage, and commit.
 
 ---
 

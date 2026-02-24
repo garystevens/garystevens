@@ -30,6 +30,14 @@ Server starts at `http://localhost:3000`.
 garystevens/
 ├── server.js            # Express app (exported) + entry point
 ├── package.json
+├── eslint.config.js     # ESLint 9 flat config (Node, Jest, browser scopes)
+├── .prettierrc          # Prettier formatting rules
+├── .prettierignore
+├── .husky/
+│   └── pre-commit       # Runs lint-staged before every commit
+├── .github/
+│   └── workflows/
+│       └── ci.yml       # CI pipeline (lint + test matrix)
 ├── data/                # Content — edit these to update the site
 │   ├── profile.json
 │   ├── projects.json
@@ -46,10 +54,13 @@ garystevens/
 
 ## npm scripts
 
-| Command     | Description                 |
-| ----------- | --------------------------- |
-| `npm start` | Start the production server |
-| `npm test`  | Run the test suite          |
+| Command            | Description                           |
+| ------------------ | ------------------------------------- |
+| `npm start`        | Start the production server           |
+| `npm test`         | Run the test suite                    |
+| `npm run lint`     | Check all JS files with ESLint        |
+| `npm run lint:fix` | Auto-fix ESLint issues where possible |
+| `npm run format`   | Format all files with Prettier        |
 
 ---
 
@@ -133,6 +144,17 @@ PORT=8080 npm start
 
 ---
 
+## Code quality
+
+| Tool                                                      | Config              | Purpose                                                          |
+| --------------------------------------------------------- | ------------------- | ---------------------------------------------------------------- |
+| [ESLint](https://eslint.org/)                             | `eslint.config.js`  | Linting — separate rule scopes for Node, Jest, and browser files |
+| [Prettier](https://prettier.io/)                          | `.prettierrc`       | Formatting — single quotes, trailing commas, 80-char width       |
+| [Husky](https://typicode.github.io/husky/)                | `.husky/pre-commit` | Git hook that runs lint-staged before every commit               |
+| [lint-staged](https://github.com/lint-staged/lint-staged) | `package.json`      | Runs ESLint + Prettier on staged files only                      |
+
+---
+
 ## Testing
 
 Tests use [Jest](https://jestjs.io/) and [Supertest](https://github.com/ladjs/supertest). The Express `app` is imported directly — no real server port is opened during tests.
@@ -152,14 +174,20 @@ Coverage areas:
 
 ## CI
 
-Every push to `main` and every pull request targeting `main` runs the test suite automatically via GitHub Actions across Node 18 and Node 20.
+Every push to `main` and every pull request targeting `main` triggers three parallel jobs via GitHub Actions:
 
-Pipeline status is visible on the [Actions tab](https://github.com/garystevens/garystevens/actions) and reflected in the badge at the top of this file.
+| Job           | What it does                   |
+| ------------- | ------------------------------ |
+| `lint`        | Runs `npm run lint` on Node 20 |
+| `test (18.x)` | Runs the test suite on Node 18 |
+| `test (20.x)` | Runs the test suite on Node 20 |
+
+All three must pass for a green check. Pipeline status is visible on the [Actions tab](https://github.com/garystevens/garystevens/actions) and reflected in the badge at the top of this file.
 
 To match CI locally before pushing:
 
 ```bash
-npm ci && npm test -- --forceExit
+npm ci && npm run lint && npm test -- --forceExit
 ```
 
 `npm ci` (rather than `npm install`) mirrors what CI does — clean install from `package-lock.json`, fails if the lockfile is out of date.
