@@ -61,7 +61,14 @@ tail -f server.log
 
 ## Verifying the server is healthy
 
-Check that all three data endpoints respond:
+The fastest check — the dedicated health endpoint:
+
+```bash
+curl -s http://localhost:3000/health
+# {"status":"ok","uptime":12.3,"timestamp":1700000000000}
+```
+
+To verify all data endpoints are also responding:
 
 ```bash
 curl -s http://localhost:3000/data/profile | node -e "const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')); console.log('name:', d.name)"
@@ -69,7 +76,7 @@ curl -s http://localhost:3000/data/projects | node -e "const d=JSON.parse(requir
 curl -s http://localhost:3000/data/skills | node -e "const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')); console.log('categories:', d.length)"
 ```
 
-Or run the test suite as a health check:
+Or run the full test suite:
 
 ```bash
 npm test
@@ -135,7 +142,7 @@ This installs all dependencies — production (`express`) and dev (`jest`, `supe
 npm test
 ```
 
-All 15 tests should pass. A failure indicates either:
+All 23 tests should pass. A failure indicates either:
 
 - A data file is malformed or missing a required field
 - A route is broken in `server.js`

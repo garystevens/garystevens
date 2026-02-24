@@ -75,6 +75,57 @@ describe('GET /data/projects', () => {
   });
 });
 
+describe('GET /health', () => {
+  let res;
+
+  beforeAll(async () => {
+    res = await request(app).get('/health');
+  });
+
+  test('returns 200', () => {
+    expect(res.status).toBe(200);
+  });
+
+  test('returns JSON', () => {
+    expect(res.headers['content-type']).toMatch(/json/);
+  });
+
+  test('body has status: ok', () => {
+    expect(res.body.status).toBe('ok');
+  });
+
+  test('body has numeric uptime', () => {
+    expect(typeof res.body.uptime).toBe('number');
+    expect(res.body.uptime).toBeGreaterThanOrEqual(0);
+  });
+
+  test('body has numeric timestamp', () => {
+    expect(typeof res.body.timestamp).toBe('number');
+    expect(res.body.timestamp).toBeGreaterThan(0);
+  });
+});
+
+describe('Security headers', () => {
+  let headers;
+
+  beforeAll(async () => {
+    const res = await request(app).get('/health');
+    headers = res.headers;
+  });
+
+  test('sets x-content-type-options', () => {
+    expect(headers['x-content-type-options']).toBe('nosniff');
+  });
+
+  test('sets x-frame-options', () => {
+    expect(headers['x-frame-options']).toBeDefined();
+  });
+
+  test('sets x-xss-protection', () => {
+    expect(headers['x-xss-protection']).toBeDefined();
+  });
+});
+
 describe('Error handler', () => {
   test('returns JSON with status 500 for unhandled errors', async () => {
     const res = await request(app).get('/__test/error');

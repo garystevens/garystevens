@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const morgan = require('morgan');
+const helmet = require('helmet');
 
 const app = express();
 
@@ -9,19 +10,27 @@ if (process.env.NODE_ENV !== 'test') {
   app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 }
 
+// Security headers
+app.use(helmet());
+
 // Serve static files from public/
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Health check — used by uptime monitors and load balancers
+app.get('/health', (_req, res) => {
+  res.json({ status: 'ok', uptime: process.uptime(), timestamp: Date.now() });
+});
+
 // Data API endpoints
-app.get('/data/profile', (req, res) => {
+app.get('/data/profile', (_req, res) => {
   res.sendFile(path.join(__dirname, 'data', 'profile.json'));
 });
 
-app.get('/data/projects', (req, res) => {
+app.get('/data/projects', (_req, res) => {
   res.sendFile(path.join(__dirname, 'data', 'projects.json'));
 });
 
-app.get('/data/skills', (req, res) => {
+app.get('/data/skills', (_req, res) => {
   res.sendFile(path.join(__dirname, 'data', 'skills.json'));
 });
 

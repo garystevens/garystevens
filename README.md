@@ -68,6 +68,18 @@ garystevens/
 
 All endpoints return `application/json`.
 
+### `GET /health`
+
+Returns server health status. Intended for uptime monitors and load balancers — does not check data files.
+
+```json
+{
+  "status": "ok",
+  "uptime": 42.3,
+  "timestamp": 1700000000000
+}
+```
+
 ### `GET /data/profile`
 
 Returns personal profile information.
@@ -170,6 +182,8 @@ Coverage areas:
 - Each `/data/*` endpoint returns 200 JSON with the correct shape
 - Required fields and types are validated per endpoint
 - Unhandled errors return JSON (not HTML) with the correct status code
+- `GET /health` returns `{ status, uptime, timestamp }`
+- Security headers are present on all responses (helmet)
 
 ---
 
@@ -202,9 +216,11 @@ npm ci && npm run lint && npm test -- --forceExit
 **Middleware order** (registration order matters in Express):
 
 1. `morgan` — logs every request; skipped when `NODE_ENV=test`
-2. `express.static` — serves `public/`
-3. Data routes — `GET /data/*`
-4. Global error handler — catches any unhandled error, returns `{ error: "..." }` JSON; masks 5xx messages in production
+2. `helmet` — sets security headers on every response
+3. `express.static` — serves `public/`
+4. `GET /health` — lightweight health check
+5. Data routes — `GET /data/*`
+6. Global error handler — catches any unhandled error, returns `{ error: "..." }` JSON; masks 5xx messages in production
 
 ```
 ┌─────────────┐     GET /          ┌──────────────┐
