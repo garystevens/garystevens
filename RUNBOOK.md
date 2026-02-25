@@ -4,6 +4,54 @@ Operational reference for running, maintaining, and troubleshooting the portfoli
 
 ---
 
+## Running with Docker
+
+### Start
+
+```bash
+npm run docker:up
+# or: docker compose up
+```
+
+Builds the image on first run. Subsequent starts reuse the cached image unless the `Dockerfile` or dependencies have changed.
+
+To run in the background:
+
+```bash
+docker compose up -d
+```
+
+### Stop
+
+```bash
+npm run docker:down
+# or: docker compose down
+```
+
+### View container logs
+
+```bash
+docker compose logs -f
+```
+
+### Rebuild the image
+
+Required after changing `package.json`, `server.js`, or any file copied in the `Dockerfile`:
+
+```bash
+npm run docker:build
+# then:
+npm run docker:up
+```
+
+### Health check
+
+```bash
+curl -s http://localhost:3000/health
+```
+
+---
+
 ## Starting the server
 
 ```bash
@@ -204,13 +252,14 @@ git commit --no-verify -m "message"
 - Every push to `main`
 - Every pull request targeting `main`
 
-Three jobs run in parallel — all must pass for the check to be green:
+Four jobs run in parallel — all must pass for the check to be green:
 
-| Job           | What it runs              |
-| ------------- | ------------------------- |
-| `lint`        | `npm run lint` on Node 20 |
-| `test (18.x)` | Test suite on Node 18     |
-| `test (20.x)` | Test suite on Node 20     |
+| Job           | What it runs                                        |
+| ------------- | --------------------------------------------------- |
+| `lint`        | `npm run lint` on Node 20                           |
+| `test (18.x)` | Test suite on Node 18                               |
+| `test (20.x)` | Test suite on Node 20                               |
+| `docker`      | `docker build` — validates the image builds cleanly |
 
 ### Checking pipeline status
 
@@ -240,11 +289,45 @@ Go to the **Actions** tab on GitHub. Each run shows per-job logs. The badge in t
 | `npm ci` fails                    | `package-lock.json` is out of sync — run `npm install` locally and commit the updated lockfile     |
 | Lint fails in CI but not locally  | ESLint or Prettier version mismatch — ensure you ran `npm ci`, not `npm install`                   |
 | Tests pass locally but fail in CI | An absolute path or OS-specific behaviour in a test; check the logs for the differing Node version |
+| Docker build fails in CI          | A file referenced in the `Dockerfile` was moved or the base image tag is unavailable               |
 | Workflow doesn't trigger          | Branch name doesn't match `main`; check the `on.push.branches` value in `ci.yml`                   |
 
 ---
 
 ## Troubleshooting
+
+### Docker container won't start
+
+Check the logs immediately after the failure:
+
+```bash
+docker compose logs
+```
+
+Common causes:
+
+- Port 3000 already in use — stop the conflicting process or change `PORT`
+- Image not built — run `npm run docker:build` first
+
+### Changes to data files not reflected in the container
+
+The `data/` directory is mounted as a volume — no rebuild needed. If changes still aren't showing, confirm the volume is mounted:
+
+```bash
+docker compose config
+```
+
+Look for the `volumes` entry pointing `./data` to `/app/data`.
+
+### Changes to server.js or package.json not reflected
+
+These files are baked into the image at build time, not mounted. Rebuild:
+
+```bash
+npm run docker:build && npm run docker:up
+```
+
+---
 
 ### Port already in use
 

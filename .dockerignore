@@ -1,0 +1,14 @@
+.git/
+.github/
+.husky/
+node_modules/
+tests/
+coverage/
+.env*
+*.log
+.prettierrc
+.prettierignore
+eslint.config.js
+README.md
+RUNBOOK.md
+docker-compose.yml

@@ -30,6 +30,9 @@ Server starts at `http://localhost:3000`.
 garystevens/
 ├── server.js            # Express app (exported) + entry point
 ├── package.json
+├── Dockerfile           # Production image (node:20-alpine, non-root user)
+├── docker-compose.yml   # Local dev container with data/ volume mount
+├── .dockerignore
 ├── eslint.config.js     # ESLint 9 flat config (Node, Jest, browser scopes)
 ├── .prettierrc          # Prettier formatting rules
 ├── .prettierignore
@@ -37,7 +40,7 @@ garystevens/
 │   └── pre-commit       # Runs lint-staged before every commit
 ├── .github/
 │   └── workflows/
-│       └── ci.yml       # CI pipeline (lint + test matrix)
+│       └── ci.yml       # CI pipeline (lint + test + docker build)
 ├── data/                # Content — edit these to update the site
 │   ├── profile.json
 │   ├── projects.json
@@ -54,13 +57,16 @@ garystevens/
 
 ## npm scripts
 
-| Command            | Description                           |
-| ------------------ | ------------------------------------- |
-| `npm start`        | Start the production server           |
-| `npm test`         | Run the test suite                    |
-| `npm run lint`     | Check all JS files with ESLint        |
-| `npm run lint:fix` | Auto-fix ESLint issues where possible |
-| `npm run format`   | Format all files with Prettier        |
+| Command                | Description                            |
+| ---------------------- | -------------------------------------- |
+| `npm start`            | Start the production server            |
+| `npm test`             | Run the test suite                     |
+| `npm run lint`         | Check all JS files with ESLint         |
+| `npm run lint:fix`     | Auto-fix ESLint issues where possible  |
+| `npm run format`       | Format all files with Prettier         |
+| `npm run docker:build` | Build the Docker image                 |
+| `npm run docker:up`    | Start the container via docker-compose |
+| `npm run docker:down`  | Stop and remove the container          |
 
 ---
 
@@ -191,11 +197,12 @@ Coverage areas:
 
 Every push to `main` and every pull request targeting `main` triggers three parallel jobs via GitHub Actions:
 
-| Job           | What it does                   |
-| ------------- | ------------------------------ |
-| `lint`        | Runs `npm run lint` on Node 20 |
-| `test (18.x)` | Runs the test suite on Node 18 |
-| `test (20.x)` | Runs the test suite on Node 20 |
+| Job           | What it does                             |
+| ------------- | ---------------------------------------- |
+| `lint`        | Runs `npm run lint` on Node 20           |
+| `test (18.x)` | Runs the test suite on Node 18           |
+| `test (20.x)` | Runs the test suite on Node 20           |
+| `docker`      | Builds the Docker image (`docker build`) |
 
 All three must pass for a green check. Pipeline status is visible on the [Actions tab](https://github.com/garystevens/garystevens/actions) and reflected in the badge at the top of this file.
 
@@ -206,6 +213,23 @@ npm ci && npm run lint && npm test -- --forceExit
 ```
 
 `npm ci` (rather than `npm install`) mirrors what CI does — clean install from `package-lock.json`, fails if the lockfile is out of date.
+
+---
+
+## Docker
+
+The app ships as a single container built from `node:20-alpine`. Production dependencies only are installed — dev tooling is excluded.
+
+```bash
+# Build and start via docker-compose (recommended for local use)
+npm run docker:up
+
+# Or build and run the image directly
+docker build -t garystevens .
+docker run -p 3000:3000 garystevens
+```
+
+`docker-compose.yml` mounts `data/` as a read-only volume, so JSON content files can be edited without rebuilding the image.
 
 ---
 

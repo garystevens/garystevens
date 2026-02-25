@@ -1,0 +1,11 @@
+services:
+  app:
+    build: .
+    ports:
+      - '${PORT:-3000}:3000'
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3000
+    volumes:
+      # Mount data/ so JSON files can be edited without rebuilding the image
+      - ./data:/app/data:ro
