@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "test": "jest",
+    "test:coverage": "jest --coverage --forceExit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -13,6 +14,19 @@
     "docker:up": "docker compose up",
     "docker:down": "docker compose down",
     "prepare": "husky"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "server.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 85,
+        "functions": 85,
+        "lines": 85,
+        "branches": 45
+      }
+    }
   },
   "dependencies": {
     "dotenv": "^17.3.1",

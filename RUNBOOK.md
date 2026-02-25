@@ -222,6 +222,18 @@ All 23 tests should pass. A failure indicates either:
 - A route is broken in `server.js`
 - A file was renamed or moved
 
+### Coverage
+
+```bash
+npm run test:coverage
+```
+
+Runs all tests and enforces thresholds. The command exits non-zero if any threshold is breached — the same command runs in CI on Node 20.
+
+Current thresholds: statements ≥ 85%, functions ≥ 85%, lines ≥ 85%, branches ≥ 45%. Branch coverage is intentionally lower — `NODE_ENV` guards and the `require.main` block are environment-conditional and cannot be exercised in a standard test run (see [ADR-002](docs/decisions/002-app-export-pattern.md)).
+
+---
+
 ### Lint
 
 ```bash

@@ -50,24 +50,31 @@ garystevens/
 │   ├── index.html
 │   ├── style.css
 │   └── app.js
-└── tests/
-    └── server.test.js   # Integration tests (Jest + Supertest)
+├── tests/
+│   └── server.test.js   # Integration tests (Jest + Supertest)
+├── docs/
+│   └── decisions/       # Architecture Decision Records
+│       ├── 001-static-json-content.md
+│       ├── 002-app-export-pattern.md
+│       └── 003-commonjs-over-esm.md
+└── CHANGELOG.md
 ```
 
 ---
 
 ## npm scripts
 
-| Command                | Description                            |
-| ---------------------- | -------------------------------------- |
-| `npm start`            | Start the production server            |
-| `npm test`             | Run the test suite                     |
-| `npm run lint`         | Check all JS files with ESLint         |
-| `npm run lint:fix`     | Auto-fix ESLint issues where possible  |
-| `npm run format`       | Format all files with Prettier         |
-| `npm run docker:build` | Build the Docker image                 |
-| `npm run docker:up`    | Start the container via docker-compose |
-| `npm run docker:down`  | Stop and remove the container          |
+| Command                 | Description                               |
+| ----------------------- | ----------------------------------------- |
+| `npm start`             | Start the production server               |
+| `npm test`              | Run the test suite                        |
+| `npm run lint`          | Check all JS files with ESLint            |
+| `npm run lint:fix`      | Auto-fix ESLint issues where possible     |
+| `npm run format`        | Format all files with Prettier            |
+| `npm run test:coverage` | Run tests and enforce coverage thresholds |
+| `npm run docker:build`  | Build the Docker image                    |
+| `npm run docker:up`     | Start the container via docker-compose    |
+| `npm run docker:down`   | Stop and remove the container             |
 
 ---
 
@@ -201,6 +208,15 @@ Coverage areas:
 - `GET /health` returns `{ status, uptime, timestamp }`
 - Security headers are present on all responses (helmet)
 
+**Coverage thresholds** (enforced via `npm run test:coverage`):
+
+| Metric     | Threshold | Notes                                                                                                                                                                                   |
+| ---------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Statements | 85%       |                                                                                                                                                                                         |
+| Functions  | 85%       |                                                                                                                                                                                         |
+| Lines      | 85%       |                                                                                                                                                                                         |
+| Branches   | 45%       | Lower due to environment-conditional code (`NODE_ENV` guards, `require.main`) that cannot be exercised in a standard test run — see [ADR-002](docs/decisions/002-app-export-pattern.md) |
+
 ---
 
 ## CI
@@ -240,6 +256,18 @@ docker run -p 3000:3000 garystevens
 ```
 
 `docker-compose.yml` mounts `data/` as a read-only volume, so JSON content files can be edited without rebuilding the image.
+
+---
+
+## Architecture Decision Records
+
+Key decisions are documented in [`docs/decisions/`](docs/decisions/):
+
+| ADR                                              | Decision                                                   |
+| ------------------------------------------------ | ---------------------------------------------------------- |
+| [001](docs/decisions/001-static-json-content.md) | Static JSON files for content storage (vs database or CMS) |
+| [002](docs/decisions/002-app-export-pattern.md)  | Export `app` separately from `app.listen` for testability  |
+| [003](docs/decisions/003-commonjs-over-esm.md)   | CommonJS over ES Modules                                   |
 
 ---
 
