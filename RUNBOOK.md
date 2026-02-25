@@ -172,6 +172,32 @@ Run `npm test` to confirm the data file is still valid. Note: the test suite cur
 
 ---
 
+## Environment configuration
+
+All environment variables are documented in [.env.example](.env.example).
+
+### Local setup
+
+```bash
+cp .env.example .env
+# Edit .env as needed — defaults work out of the box
+```
+
+`.env` is loaded automatically at startup via `dotenv`. It is gitignored and must never be committed.
+
+### Available variables
+
+| Variable   | Default       | Effect                                                                         |
+| ---------- | ------------- | ------------------------------------------------------------------------------ |
+| `PORT`     | `3000`        | Port the server listens on                                                     |
+| `NODE_ENV` | `development` | `development`: dev logs, full errors · `production`: combined logs, masked 5xx |
+
+### Production
+
+Do not use a `.env` file in production. Set variables through your hosting platform's environment config (e.g. Railway, Fly.io, Render, or shell `export`). The app reads from `process.env` directly — `dotenv` is a no-op when no `.env` file is present.
+
+---
+
 ## Installing dependencies after a fresh clone
 
 ```bash

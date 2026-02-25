@@ -33,6 +33,7 @@ garystevens/
 ├── Dockerfile           # Production image (node:20-alpine, non-root user)
 ├── docker-compose.yml   # Local dev container with data/ volume mount
 ├── .dockerignore
+├── .env.example         # Documented env vars — copy to .env for local dev
 ├── eslint.config.js     # ESLint 9 flat config (Node, Jest, browser scopes)
 ├── .prettierrc          # Prettier formatting rules
 ├── .prettierignore
@@ -150,11 +151,20 @@ After editing, run `npm test` to verify the data files still conform to the expe
 
 ## Configuration
 
-| Environment variable | Default | Description                |
-| -------------------- | ------- | -------------------------- |
-| `PORT`               | `3000`  | Port the server listens on |
+| Environment variable | Default       | Description                                                                       |
+| -------------------- | ------------- | --------------------------------------------------------------------------------- |
+| `PORT`               | `3000`        | Port the server listens on                                                        |
+| `NODE_ENV`           | `development` | Controls logging format and error verbosity (`development`, `production`, `test`) |
 
-Set via shell or a `.env` file (requires `dotenv` if using a `.env` file):
+**Local development** — copy `.env.example` to `.env` and edit as needed:
+
+```bash
+cp .env.example .env
+```
+
+`.env` is loaded automatically by `dotenv` on startup and is gitignored — never commit it. In production, set variables through your platform's environment config instead.
+
+**Inline override** (without a `.env` file):
 
 ```bash
 PORT=8080 npm start

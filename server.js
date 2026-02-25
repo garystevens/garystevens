@@ -1,3 +1,6 @@
+// Load .env into process.env — no-op if file doesn't exist (production uses platform env vars)
+require('dotenv').config();
+
 const express = require('express');
 const path = require('path');
 const morgan = require('morgan');
